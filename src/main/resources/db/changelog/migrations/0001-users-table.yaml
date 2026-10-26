@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0001-users-table
+      author: devjoaopr
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+              - column:
+                  name: username
+                  type: varchar(60)
+              - column:
+                  name: email
+                  type: varchar(60)
+              - column:
+                  name: password
+                  type: varchar(16)
+              - column:
+                  name: roles
+                  type: varchar
