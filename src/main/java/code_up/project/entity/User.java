@@ -17,9 +17,8 @@ public class User {
     private UUID id;
     @Column(length = 60)
     private String username;
-    @Column(length = 60)
+    @Column(length = 60, unique = true, nullable = false)
     private String email;
-    @Column(length = 16)
     private String password;
     private String roles;
 }
