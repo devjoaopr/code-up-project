@@ -10,14 +10,18 @@ databaseChangeLog:
                   name: id
                   type: uuid
               - column:
-                  name: name
+                  name: username
                   type: varchar(60)
               - column:
                   name: email
                   type: varchar(60)
               - column:
                   name: password
-                  type: varchar(16)
+                  type: varchar
               - column:
                   name: roles
                   type: varchar
+
+      rollback:
+        - dropTable:
+            tableName: users
