@@ -19,7 +19,7 @@ public class JwtService {
     private String secretKey;
 
     @Value("${jwt.expiration}")
-    private long expiration;
+    private String expiration;
 
     private SecretKey getKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));

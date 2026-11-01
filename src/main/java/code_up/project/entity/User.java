@@ -1,5 +1,6 @@
 package code_up.project.entity;
 
+import code_up.project.shared.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -19,6 +21,9 @@ public class User {
     private String username;
     @Column(length = 60, unique = true, nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
-    private String roles;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role roles;
 }

@@ -2,8 +2,8 @@ package code_up.project.controller;
 
 import code_up.project.dtos.UserDto.UserLoginRequest;
 import code_up.project.dtos.UserDto.UserLoginResponse;
-import code_up.project.dtos.UserDto.UserRegisterRequest;
 import code_up.project.services.AuthServices.JwtService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "authentication", description = "provides login and authentication")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor

@@ -54,7 +54,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException | IllegalArgumentException | UsernameNotFoundException e) {
-            // token inválido/expirado: não autentica, o entry point devolve 401
+            throw e;
         }
 
         chain.doFilter(request, response);
