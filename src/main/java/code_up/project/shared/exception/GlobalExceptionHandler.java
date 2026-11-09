@@ -1,9 +1,8 @@
-package com.enterprise.api.advice;
+package code_up.project.shared.exception;
 
-import com.enterprise.api.common.dto.ApiError;
-import com.enterprise.api.common.dto.ValidationErrorDetail;
-import com.enterprise.api.common.exception.*;
-import com.enterprise.api.common.service.MessageService;
+import code_up.project.shared.common.ValidationErrorDetail;
+import code_up.project.shared.enums.ErrorCode;
+import code_up.project.shared.response.ApiError;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +27,6 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-    private final MessageService messageService;
-
-    public GlobalExceptionHandler(MessageService messageService) {
-        this.messageService = messageService;
-    }
 
     // ─── 1. Validation Errors → HTTP 422 ───────────────────────
 
@@ -51,8 +45,7 @@ public class GlobalExceptionHandler {
                         Collectors.mapping(this::toValidationErrorDetail, Collectors.toList())
                 ));
 
-        String message = messageService.get("error.validation");
-        ApiError response = ApiError.validationError(message, errors);
+        ApiError response = ApiError.validationError("validation error", errors);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
     }
 
@@ -70,8 +63,7 @@ public class GlobalExceptionHandler {
                     .add(new ValidationErrorDetail(code.toUpperCase(), msg));
         });
 
-        String message = messageService.get("error.validation");
-        ApiError response = ApiError.validationError(message, errors);
+        ApiError response = ApiError.validationError("constraint violation error", errors);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
     }
 
@@ -80,10 +72,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiError> handleMissingParam(MissingServletRequestParameterException ex) {
-        String message = messageService.get("error.validation");
         var error = new ValidationErrorDetail("REQUIRED", ex.getParameterName() + " is required");
         var errors = Map.of(ex.getParameterName(), List.of(error));
-        ApiError response = ApiError.validationError(message, errors);
+        ApiError response = ApiError.validationError("missing request params", errors);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
     }
 
@@ -95,8 +86,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex) {
         log.warn("Resource not found: {}", ex.getMessage());
-        String message = messageService.get("error.not.found", ex.getArgs());
-        ApiError response = ApiError.of(ex.getErrorCode().getCode(), message);
+        ApiError response = ApiError.of(ex.getErrorCode().getCode(), "Resource not found");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
@@ -106,19 +96,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ApiError> handleDuplicate(DuplicateResourceException ex) {
         log.warn("Duplicate resource: {}", ex.getMessage());
-        String message = messageService.get("error.duplicate", ex.getArgs());
-        ApiError response = ApiError.of(ex.getErrorCode().getCode(), message);
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-    }
-
-    /**
-     * Handles InsufficientBalanceException → HTTP 409.
-     */
-    @ExceptionHandler(InsufficientBalanceException.class)
-    public ResponseEntity<ApiError> handleInsufficientBalance(InsufficientBalanceException ex) {
-        log.warn("Insufficient balance: {}", ex.getMessage());
-        String message = messageService.get("error.insufficient.balance");
-        ApiError response = ApiError.of(ex.getErrorCode().getCode(), message);
+        ApiError response = ApiError.of(ex.getErrorCode().getCode(), "duplicate resource");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
@@ -128,8 +106,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidStateTransitionException.class)
     public ResponseEntity<ApiError> handleInvalidState(InvalidStateTransitionException ex) {
         log.warn("Invalid state transition: {}", ex.getMessage());
-        String message = messageService.get("error.invalid.state", ex.getArgs());
-        ApiError response = ApiError.of(ex.getErrorCode().getCode(), message);
+        ApiError response = ApiError.of(ex.getErrorCode().getCode(), "invalid stateF");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
@@ -150,8 +127,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDenied() {
-        String message = messageService.get("error.forbidden");
-        ApiError response = ApiError.of(ErrorCode.FORBIDDEN.getCode(), message);
+        ApiError response = ApiError.of(ErrorCode.FORBIDDEN.getCode(), "access denied");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
@@ -164,8 +140,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnexpected(Exception ex) {
         log.error("Unexpected error occurred", ex);
-        String message = messageService.get("error.internal");
-        ApiError response = ApiError.of(ErrorCode.INTERNAL_ERROR.getCode(), message);
+        ApiError response = ApiError.of(ErrorCode.INTERNAL_ERROR.getCode(), "internal errorF");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
@@ -177,7 +152,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleMalformedJson(HttpMessageNotReadableException ex) {
         log.warn("Malformed request body: {}", ex.getMessage());
-        String message = messageService.get("error.validation");
         ApiError response = ApiError.of(ErrorCode.VALIDATION_ERROR.getCode(), "Malformed request body");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

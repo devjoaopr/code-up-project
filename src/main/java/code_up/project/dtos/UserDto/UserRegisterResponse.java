@@ -1,5 +1,7 @@
 package code_up.project.dtos.UserDto;
 
+import code_up.project.shared.enums.Role;
+
 import java.util.UUID;
 
 public record UserRegisterResponse(
@@ -7,6 +9,6 @@ public record UserRegisterResponse(
         String username,
         String email,
         String password,
-        String role
+        Role roles
 ) {
 }

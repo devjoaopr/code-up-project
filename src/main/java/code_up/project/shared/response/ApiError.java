@@ -1,5 +1,6 @@
 package code_up.project.shared.response;
 
+import code_up.project.shared.common.ValidationErrorDetail;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,10 +29,7 @@ public record ApiError(
         Map<String, java.util.List<ValidationErrorDetail>> errors,
 
         @Schema(description = "Server response timestamp", example = "2026-05-09T10:00:00Z")
-        Instant timestamp,
-
-        @Schema(description = "Trace ID for debugging", example = "4e2fbc91-1a82-4c7e-b5f0-cf15cb53d912")
-        String traceId
+        Instant timestamp
 ) {
 
     /**
