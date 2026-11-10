@@ -1,0 +1,68 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0005-create-school-requests-table
+      author: devjoaopr
+      changes:
+        - createTable:
+            tableName: school_requests
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: school_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contact_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contact_email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message
+                  type: text
+              - column:
+                  name: status
+                  type: varchar(30)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reviewed_by
+                  type: uuid
+              - column:
+                  name: reviewed_at
+                  type: timestamp with time zone
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: school_requests
+            baseColumnNames: reviewed_by
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_school_requests_reviewer
+
+        - createIndex:
+            tableName: school_requests
+            indexName: idx_school_requests_status
+            columns:
+              - column:
+                  name: status
+
+      rollback:
+        - dropTable:
+            tableName: school_requests

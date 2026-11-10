@@ -1,0 +1,68 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0009-create-workshops-table
+      author: devjoaopr
+      changes:
+        - createTable:
+            tableName: workshops
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: school_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: status
+                  type: varchar(30)
+                  defaultValue: DRAFT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: workshops
+            baseColumnNames: school_id
+            referencedTableName: schools
+            referencedColumnNames: id
+            constraintName: fk_workshops_school
+
+        - addUniqueConstraint:
+            tableName: workshops
+            columnNames: id, school_id
+            constraintName: uk_workshops_id_school
+
+        - createIndex:
+            tableName: workshops
+            indexName: idx_workshops_school
+            columns:
+              - column:
+                  name: school_id
+
+      rollback:
+        - dropTable:
+            tableName: workshops

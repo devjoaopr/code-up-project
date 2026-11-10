@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0010-create-enrollments-table
+      author: devjoaopr
+      changes:
+        - createTable:
+            tableName: enrollments
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: school_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: workshop_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: membership_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(30)
+                  defaultValue: ACTIVE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: enrollments
+            baseColumnNames: workshop_id, school_id
+            referencedTableName: workshops
+            referencedColumnNames: id, school_id
+            constraintName: fk_enrollments_workshop
+
+        - addForeignKeyConstraint:
+            baseTableName: enrollments
+            baseColumnNames: membership_id, school_id
+            referencedTableName: school_memberships
+            referencedColumnNames: id, school_id
+            constraintName: fk_enrollments_membership
+
+        - addUniqueConstraint:
+            tableName: enrollments
+            columnNames: workshop_id, membership_id
+            constraintName: uk_enrollments_workshop_membership
+
+        - createIndex:
+            tableName: enrollments
+            indexName: idx_enrollments_school
+            columns:
+              - column:
+                  name: school_id
+
+      rollback:
+        - dropTable:
+            tableName: enrollments

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,18 +17,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "authentication", description = "provides login and authentication")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/{version}/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final JwtService jwtService;
 
-    @PostMapping("/login")
+    @PostMapping(path = "/login", version = "1")
     public UserLoginResponse login(@RequestBody UserLoginRequest req) {
+
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.email(), req.password()));
+                new UsernamePasswordAuthenticationToken(
+                        req.email(),
+                        req.password()
+                )
+        );
+
         UserDetails user = userDetailsService.loadUserByUsername(req.email());
+
         return new UserLoginResponse(jwtService.generateToken(user));
     }
 

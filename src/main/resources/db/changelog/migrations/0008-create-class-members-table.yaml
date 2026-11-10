@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0008-create-class-members-table
+      author: devjoaopr
+      changes:
+        - createTable:
+            tableName: class_members
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: school_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: class_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: membership_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: class_members
+            baseColumnNames: class_id, school_id
+            referencedTableName: classes
+            referencedColumnNames: id, school_id
+            constraintName: fk_class_members_class
+
+        - addForeignKeyConstraint:
+            baseTableName: class_members
+            baseColumnNames: membership_id, school_id
+            referencedTableName: school_memberships
+            referencedColumnNames: id, school_id
+            constraintName: fk_class_members_membership
+
+        - addUniqueConstraint:
+            tableName: class_members
+            columnNames: class_id, membership_id
+            constraintName: uk_class_members_class_membership
+
+        - createIndex:
+            tableName: class_members
+            indexName: idx_class_members_membership
+            columns:
+              - column:
+                  name: membership_id
+
+      rollback:
+        - dropTable:
+            tableName: class_members

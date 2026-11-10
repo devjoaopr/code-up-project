@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0002-update-users-table
+      author: devjoaopr
+      changes:
+        - dropColumn:
+            tableName: users
+            columnName: roles
+
+        - modifyDataType:
+            tableName: users
+            columnName: email
+            newDataType: varchar(255)
+
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropColumn:
+            tableName: users
+            columnName: created_at
+        - dropColumn:
+            tableName: users
+            columnName: updated_at
+        - modifyDataType:
+            tableName: users
+            columnName: email
+            newDataType: varchar(60)
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: roles
+                  type: varchar(255)
+                  defaultValue: USER
+                  constraints:
+                    nullable: false

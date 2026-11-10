@@ -1,6 +1,6 @@
+
 package code_up.project.services.AuthServices;
 
-import code_up.project.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -19,7 +19,7 @@ public class JwtService {
     private String secretKey;
 
     @Value("${jwt.expiration}")
-    private String expiration;
+    private long expiration;
 
     private SecretKey getKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
@@ -27,6 +27,7 @@ public class JwtService {
 
     public String generateToken(UserDetails user) {
         Date now = new Date();
+
         return Jwts.builder()
                 .subject(user.getUsername())
                 .issuedAt(now)
@@ -41,7 +42,9 @@ public class JwtService {
 
     public boolean isValid(String token, UserDetails user) {
         Claims claims = parseClaims(token);
-        return claims.getSubject().equals(user.getUsername()) && claims.getExpiration().after(new Date());
+
+        return claims.getSubject().equals(user.getUsername())
+                && claims.getExpiration().after(new Date());
     }
 
     private Claims parseClaims(String token) {
@@ -51,5 +54,4 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
 }

@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0007-create-classes-table
+      author: devjoaopr
+      changes:
+        - createTable:
+            tableName: classes
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: school_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: teacher_membership_id
+                  type: uuid
+              - column:
+                  name: name
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: classes
+            baseColumnNames: school_id
+            referencedTableName: schools
+            referencedColumnNames: id
+            constraintName: fk_classes_school
+
+        - addUniqueConstraint:
+            tableName: classes
+            columnNames: id, school_id
+            constraintName: uk_classes_id_school
+
+        - addForeignKeyConstraint:
+            baseTableName: classes
+            baseColumnNames: teacher_membership_id, school_id
+            referencedTableName: school_memberships
+            referencedColumnNames: id, school_id
+            constraintName: fk_classes_teacher_membership
+
+        - createIndex:
+            tableName: classes
+            indexName: idx_classes_school
+            columns:
+              - column:
+                  name: school_id
+
+      rollback:
+        - dropTable:
+            tableName: classes
